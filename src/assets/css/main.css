@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: "Neutra Text";
+    src: url("/src/assets/fonts/neutra-texts/neutra-text-alt-587261020eccb.otf")
+        format("opentype"),
+      url("/src/assets/fonts/neutra-texts/neutra-text-alt-587261020eccb.otf")
+        format("opentype");
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  body {
+    @apply text-content font-neutra;
+  }
+
+  .link {
+    @apply hover:text-blue-500 cursor-pointer hover:underline;
+  }
+}
