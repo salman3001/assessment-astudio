@@ -8,7 +8,7 @@ interface AppSelectProps {
 
 export default function AppSelect(props: AppSelectProps) {
   return (
-    <select value={props.value} onChange={props.onChange}>
+    <select value={props.value} onChange={props.onChange} className="bg-white">
       {props.options.map((opt, i) => (
         <option value={opt} key={i}>
           {opt}

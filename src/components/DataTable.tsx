@@ -6,10 +6,10 @@ export interface DataTableProps {
 export default function DataTable(props: DataTableProps) {
   return (
     <table className="table table-auto border-2 border-secondary w-full">
-      <thead className="bg-primary">
+      <thead className="bg-primary uppercase ">
         <tr>
           {props.headers.map((header, i) => (
-            <th className="border-2 border-secondary" key={i}>
+            <th className="border-2 border-secondary font-bold" key={i}>
               {header}
             </th>
           ))}

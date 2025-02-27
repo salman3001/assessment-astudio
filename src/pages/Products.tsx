@@ -1,116 +1,84 @@
-import DataTable from "@src/components/DataTable";
-import AppSelect from "@src/components/form/AppSelect";
-import SearchInput from "@src/components/form/SearchInput";
-import Pagination from "@src/components/Pagination";
-import { useAxios } from "@src/hooks/useAxios";
-import { apiRoutes } from "@src/libs/apiRoutes";
-import createQs from "@src/libs/createQs";
-import { searchProducts, setProducts } from "@src/store/slices/productsSlice";
+import useFetchProducts from "@src/hooks/products/useFetchProducts";
+import {
+  selectProductTableRows,
+  setProductsFilters,
+} from "@src/store/slices/productsSlice";
 import { RootState } from "@src/store/store";
-import { PaginatedRes } from "@src/types";
-import { Product } from "@src/types/modals";
-import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useDebouncedCallback } from "use-debounce";
+import AdvanceDataTable from "@src/components/AdvanceDataTable";
 
 export default function Products() {
-  const { exec, loading } = useAxios();
-
-  const defaultFilters = {
-    skip: 0,
-    limit: 5,
-    sortBy: "",
-    order: "",
-  };
-
-  const [filters, setFilters] = useState(defaultFilters);
-  const [search, setSearch] = useState("");
-
-  const debouncedSearch = useDebouncedCallback((value) => {
-    dispatch(searchProducts(value));
-  }, 500);
-
-  const productData = useSelector((state: RootState) => state.products.data);
+  const { rows, headers } = useSelector(selectProductTableRows);
+  const total = useSelector((state: RootState) => state.products.data?.total);
+  const loading = useSelector((state: RootState) => state.products.loading);
+  const limit = useSelector((state: RootState) => state.products.filters.limit);
+  const skip = useSelector((state: RootState) => state.products.filters.skip);
 
   const dispatch = useDispatch();
+  useFetchProducts();
 
-  const fetchProducts = async () => {
-    const data = await exec<PaginatedRes<{ products: Product[] }>>({
-      url: apiRoutes.products() + `?${createQs(filters)}`,
-    });
-
-    if (data) {
-      dispatch(setProducts(data));
-    }
+  const onLimitChange = (val: number) => {
+    dispatch(
+      setProductsFilters({
+        skip: 0,
+        search: "",
+        limit: val,
+        sortBy: undefined,
+        order: undefined,
+      })
+    );
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, [filters]);
+  const onFilterSelection = (filter: string, order: "asc" | "desc") => {
+    dispatch(
+      setProductsFilters({
+        skip: 0,
+        search: "",
+        limit: limit,
+        sortBy: filter,
+        order: order,
+      })
+    );
+  };
+
+  const onSearch = (val: string) => {
+    dispatch(
+      setProductsFilters({
+        limit: limit,
+        skip: 0,
+        search: val,
+        sortBy: undefined,
+        order: undefined,
+      })
+    );
+  };
+
+  const onSkipChange = (newSkip: number) => {
+    dispatch(
+      setProductsFilters({
+        skip: newSkip,
+        search: "",
+        limit: limit,
+        sortBy: undefined,
+        order: undefined,
+      })
+    );
+  };
 
   return (
-    <div className="w-full">
-      <div className="flex gap-4 py-4">
-        <AppSelect
-          options={["5", "10", "25", "50"]}
-          value={filters.limit}
-          onChange={(e) => {
-            setFilters({ ...defaultFilters, limit: Number(e.target.value) });
-          }}
-        />
-        <div className="h-7 border-2"></div>
-        <SearchInput
-          value={search}
-          onChange={(val) => {
-            setSearch(val);
-            debouncedSearch(val);
-          }}
-        />
-      </div>
-      <div>
-        {loading && <div>Loading...</div>}
-        {productData && (
-          <DataTable
-            headers={[
-              "sku",
-              "Title",
-              "Category",
-              "Price",
-              "rating",
-              "stock",
-              "brand",
-            ]}
-            rows={productData.products.map((product) => [
-              product.sku,
-              product.title,
-              product.category,
-              product.price,
-              product.rating,
-              product.stock,
-              product.brand,
-            ])}
-          />
-        )}
-      </div>
-      <br />
-      <br />
-      <div className="flex justify-center items-center">
-        {productData && (
-          <Pagination
-            skip={productData.skip}
-            limit={filters.limit}
-            totalItems={productData.total}
-            siblingCount={1}
-            onPageChange={(newSkip) => {
-              setFilters({
-                ...defaultFilters,
-                limit: filters.limit,
-                skip: newSkip,
-              });
-            }}
-          />
-        )}
-      </div>
-    </div>
+    <AdvanceDataTable
+      filters={["title", "brand", "category"]}
+      limitOptions={["5", "10", "20", "50"]}
+      limit={limit}
+      skip={skip}
+      total={total || 0}
+      headers={headers}
+      rows={rows}
+      loading={loading}
+      onLimitChange={onLimitChange}
+      onFilterSelection={onFilterSelection}
+      onSearch={onSearch}
+      onSkipChange={onSkipChange}
+    />
   );
 }
