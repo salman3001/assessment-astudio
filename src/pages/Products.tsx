@@ -1,36 +1,116 @@
+import DataTable from "@src/components/DataTable";
+import AppSelect from "@src/components/form/AppSelect";
+import SearchInput from "@src/components/form/SearchInput";
+import Pagination from "@src/components/Pagination";
+import { useAxios } from "@src/hooks/useAxios";
+import { apiRoutes } from "@src/libs/apiRoutes";
+import createQs from "@src/libs/createQs";
+import { searchProducts, setProducts } from "@src/store/slices/productsSlice";
+import { RootState } from "@src/store/store";
+import { PaginatedRes } from "@src/types";
+import { Product } from "@src/types/modals";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useDebouncedCallback } from "use-debounce";
+
 export default function Products() {
+  const { exec, loading } = useAxios();
+
+  const defaultFilters = {
+    skip: 0,
+    limit: 5,
+    sortBy: "",
+    order: "",
+  };
+
+  const [filters, setFilters] = useState(defaultFilters);
+  const [search, setSearch] = useState("");
+
+  const debouncedSearch = useDebouncedCallback((value) => {
+    dispatch(searchProducts(value));
+  }, 500);
+
+  const productData = useSelector((state: RootState) => state.products.data);
+
+  const dispatch = useDispatch();
+
+  const fetchProducts = async () => {
+    const data = await exec<PaginatedRes<{ products: Product[] }>>({
+      url: apiRoutes.products() + `?${createQs(filters)}`,
+    });
+
+    if (data) {
+      dispatch(setProducts(data));
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [filters]);
+
   return (
     <div className="w-full">
-      <div>filters</div>
-      <table className="table table-auto border-2 border-secondary w-full">
-        <thead className="bg-primary">
-          <tr>
-            <th className="border-2 border-secondary">Song</th>
-            <th className="border-2 border-secondary">Artist</th>
-            <th className="border-2 border-secondary">Year</th>
-          </tr>
-        </thead>
-        <tbody className="text-center border ">
-          <tr className="hover:bg-secondary">
-            <td className="border-2 border-secondary">
-              The Sliding Mr. Bones (Next Stop, Pottersville)
-            </td>
-            <td className="border-2 border-secondary">Malcolm Lockyer</td>
-            <td className="border-2 border-secondary">1961</td>
-          </tr>
-          <tr className="hover:bg-secondary">
-            <td className="border-2 border-secondary">Witchy Woman</td>
-            <td className="border-2 border-secondary">The Eagles</td>
-            <td className="border-2 border-secondary">1972</td>
-          </tr>
-          <tr className="hover:bg-secondary">
-            <td className="border-2 border-secondary">Shining Star</td>
-            <td className="border-2 border-secondary">Earth, Wind, and Fire</td>
-            <td className="border-2 border-secondary">1975</td>
-          </tr>
-        </tbody>
-      </table>
-      <div></div>
+      <div className="flex gap-4 py-4">
+        <AppSelect
+          options={["5", "10", "25", "50"]}
+          value={filters.limit}
+          onChange={(e) => {
+            setFilters({ ...defaultFilters, limit: Number(e.target.value) });
+          }}
+        />
+        <div className="h-7 border-2"></div>
+        <SearchInput
+          value={search}
+          onChange={(val) => {
+            setSearch(val);
+            debouncedSearch(val);
+          }}
+        />
+      </div>
+      <div>
+        {loading && <div>Loading...</div>}
+        {productData && (
+          <DataTable
+            headers={[
+              "sku",
+              "Title",
+              "Category",
+              "Price",
+              "rating",
+              "stock",
+              "brand",
+            ]}
+            rows={productData.products.map((product) => [
+              product.sku,
+              product.title,
+              product.category,
+              product.price,
+              product.rating,
+              product.stock,
+              product.brand,
+            ])}
+          />
+        )}
+      </div>
+      <br />
+      <br />
+      <div className="flex justify-center items-center">
+        {productData && (
+          <Pagination
+            skip={productData.skip}
+            limit={filters.limit}
+            totalItems={productData.total}
+            siblingCount={1}
+            onPageChange={(newSkip) => {
+              setFilters({
+                ...defaultFilters,
+                limit: filters.limit,
+                skip: newSkip,
+              });
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 }
