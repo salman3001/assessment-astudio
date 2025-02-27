@@ -81,7 +81,7 @@ export default function Pagination(props: PaginationProps) {
   const pages = generatePageNumbers();
 
   return (
-    <div className="flex gap-8">
+    <div className="flex flex-wrap gap-8">
       {/* Previous Page Button */}
       <button
         onClick={() => handleClick(currentPage - 1)}

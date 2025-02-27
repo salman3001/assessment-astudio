@@ -36,48 +36,39 @@ export const productsSlice = createSlice({
   reducers: {
     setProducts: (
       state: ProductsState,
-      action: PayloadAction<ProductsState["data"]>
+      action: PayloadAction<ProductsState["data"]>,
     ) => {
       state.data = action.payload;
     },
     setProductsFilters: (
       state: ProductsState,
-      action: PayloadAction<ProductsState["filters"]>
+      action: PayloadAction<ProductsState["filters"]>,
     ) => {
       state.filters = action.payload;
     },
     setProductsLoading: (
       state: ProductsState,
-      action: PayloadAction<boolean>
+      action: PayloadAction<boolean>,
     ) => {
       state.loading = action.payload;
     },
     setProductsError: (
       state: ProductsState,
-      action: PayloadAction<string | undefined>
+      action: PayloadAction<string | undefined>,
     ) => {
       state.error = action.payload;
     },
     setProductsSearch: (
       state: ProductsState,
-      action: PayloadAction<string>
+      action: PayloadAction<string>,
     ) => {
       state.filters.search = action.payload;
-    },
-    searchProducts: (state: ProductsState, action: PayloadAction<string>) => {
-      const lowerSearchTerm = action.payload.toLowerCase();
-      if (state.data?.products && lowerSearchTerm) {
-        state.data.products = state.data?.products.filter((product) =>
-          product.title.toLowerCase().includes(lowerSearchTerm)
-        );
-      }
     },
   },
 });
 
 export const {
   setProducts,
-  searchProducts,
   setProductsLoading,
   setProductsError,
   setProductsFilters,
@@ -118,8 +109,8 @@ export const selectProductTableRows = createSelector(
     } else {
       const filteredRows = rows.filter((row) =>
         row.some((val: string | number) =>
-          String(val).toLowerCase().includes(lowerSearchTerm)
-        )
+          String(val).toLowerCase().includes(lowerSearchTerm),
+        ),
       );
 
       return {
@@ -127,5 +118,5 @@ export const selectProductTableRows = createSelector(
         rows: filteredRows,
       };
     }
-  }
+  },
 );

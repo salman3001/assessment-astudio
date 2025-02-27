@@ -6,6 +6,7 @@ import {
 import { RootState } from "@src/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import AdvanceDataTable from "@src/components/AdvanceDataTable";
+import { Filter } from "@src/components/SortFilters";
 
 export default function Products() {
   const { rows, headers } = useSelector(selectProductTableRows);
@@ -25,19 +26,19 @@ export default function Products() {
         limit: val,
         sortBy: undefined,
         order: undefined,
-      })
+      }),
     );
   };
 
-  const onFilterSelection = (filter: string, order: "asc" | "desc") => {
+  const onSortFilterSelection = (filter: Filter, order: "asc" | "desc") => {
     dispatch(
       setProductsFilters({
         skip: 0,
         search: "",
         limit: limit,
-        sortBy: filter,
+        sortBy: filter.value,
         order: order,
-      })
+      }),
     );
   };
 
@@ -49,7 +50,7 @@ export default function Products() {
         search: val,
         sortBy: undefined,
         order: undefined,
-      })
+      }),
     );
   };
 
@@ -61,13 +62,19 @@ export default function Products() {
         limit: limit,
         sortBy: undefined,
         order: undefined,
-      })
+      }),
     );
   };
 
+  const sortFilters: Filter[] = [
+    { title: "Title", value: "title" },
+    { title: "Brand", value: "brand" },
+    { title: "Category", value: "category" },
+  ];
+
   return (
     <AdvanceDataTable
-      filters={["title", "brand", "category"]}
+      sortFilters={sortFilters}
       limitOptions={["5", "10", "20", "50"]}
       limit={limit}
       skip={skip}
@@ -76,7 +83,7 @@ export default function Products() {
       rows={rows}
       loading={loading}
       onLimitChange={onLimitChange}
-      onFilterSelection={onFilterSelection}
+      onSortFilterSelection={onSortFilterSelection}
       onSearch={onSearch}
       onSkipChange={onSkipChange}
     />

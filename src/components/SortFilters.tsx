@@ -2,25 +2,27 @@ import CheveronDownIcon from "@src/assets/svg/chevron-down.svg?react";
 import CheveronUpIcon from "@src/assets/svg/chevron-up.svg?react";
 import { useState } from "react";
 
+export type Filter = { title: string; value: string };
+
 interface SortFiltersProps {
-  values: string[];
-  onSelection: (name: string, order: "asc" | "desc") => void;
+  filters: Filter[];
+  onSelection: (filter: Filter, order: "asc" | "desc") => void;
 }
 
 export default function SortFilters(props: SortFiltersProps) {
-  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState<Filter | null>(null);
 
-  const handelSelection = (name: string, order: "asc" | "desc") => {
-    setSelectedFilter(name);
-    props.onSelection(name, order);
+  const handelSelection = (filter: Filter, order: "asc" | "desc") => {
+    setSelectedFilter(filter);
+    props.onSelection(filter, order);
   };
 
   return (
-    <div className="flex gap-2">
-      {props.values.map((filter, i) => (
+    <div className="flex gap-2 flex-wrap text-nowrap">
+      {props.filters.map((filter, i) => (
         <SortFilter
-          name={filter}
-          selected={selectedFilter === filter}
+          filter={filter}
+          selected={selectedFilter?.value === filter.value}
           onSelection={handelSelection}
           key={i}
         />
@@ -30,9 +32,9 @@ export default function SortFilters(props: SortFiltersProps) {
 }
 
 interface SortFilterProps {
-  name: string;
+  filter: Filter;
   selected: boolean;
-  onSelection: (name: string, order: "asc" | "desc") => void;
+  onSelection: (filter: Filter, order: "asc" | "desc") => void;
 }
 
 const SortFilter = (props: SortFilterProps) => {
@@ -41,17 +43,17 @@ const SortFilter = (props: SortFilterProps) => {
   const handelClick = () => {
     if (props.selected) {
       setOrder(order === "asc" ? "desc" : "asc");
-      props.onSelection(props.name, order === "asc" ? "desc" : "asc");
+      props.onSelection(props.filter, order === "asc" ? "desc" : "asc");
     } else {
-      props.onSelection(props.name, order);
+      props.onSelection(props.filter, order);
     }
   };
   return (
     <div
-      className="flex justify-center items-center gap-1 cursor-pointer capitalize"
+      className={`flex justify-center items-center gap-1 cursor-pointer capitalize`}
       onClick={handelClick}
     >
-      {props.name}{" "}
+      {props.filter.title}{" "}
       {order === "asc" ? (
         <CheveronDownIcon className="size-4" />
       ) : (

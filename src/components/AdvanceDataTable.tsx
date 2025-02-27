@@ -2,7 +2,7 @@ import { useState } from "react";
 import AppSelect from "./form/AppSelect";
 import SearchInput from "./form/SearchInput";
 import { useDebouncedCallback } from "use-debounce";
-import SortFilters from "./SortFilters";
+import SortFilters, { Filter } from "./SortFilters";
 import DataTable from "./DataTable";
 import Pagination from "./Pagination";
 
@@ -12,8 +12,8 @@ interface AdvanceDataTableProps {
   onLimitChange: (newLimit: number) => void;
   skip: number;
   onSkipChange: (newSkip: number) => void;
-  filters: string[];
-  onFilterSelection: (filter: string, order: "asc" | "desc") => void;
+  sortFilters: Filter[];
+  onSortFilterSelection: (filter: Filter, order: "asc" | "desc") => void;
   onSearch: (val: string) => void;
   loading: boolean;
   headers: string[];
@@ -36,14 +36,17 @@ export default function AdvanceDataTable(props: AdvanceDataTableProps) {
 
   return (
     <div className="w-full space-y-12 py-4">
-      <div className="flex gap-4">
-        <AppSelect
-          options={props.limitOptions}
-          value={props.limit}
-          onChange={(e) => {
-            props.onLimitChange(Number(e.target.value));
-          }}
-        />
+      <div className="flex gap-4 flex-wrap text-nowrap">
+        <div className="flex items-center gap-4">
+          <AppSelect
+            options={props.limitOptions}
+            value={props.limit}
+            onChange={(e) => {
+              props.onLimitChange(Number(e.target.value));
+            }}
+          />
+          <span>Entries</span>
+        </div>
         <div className="h-7 border-2"></div>
         <SearchInput
           value={search}
@@ -54,8 +57,8 @@ export default function AdvanceDataTable(props: AdvanceDataTableProps) {
         />
         <div className="h-7 border-2"></div>
         <SortFilters
-          values={props.filters}
-          onSelection={props.onFilterSelection}
+          filters={props.sortFilters}
+          onSelection={props.onSortFilterSelection}
         />
       </div>
       <div>
