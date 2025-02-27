@@ -18,7 +18,7 @@ export default function SortFilters(props: SortFiltersProps) {
   };
 
   return (
-    <div className="flex gap-2 flex-wrap text-nowrap">
+    <ul className="flex gap-2 flex-wrap text-nowrap">
       {props.filters.map((filter, i) => (
         <SortFilter
           filter={filter}
@@ -27,7 +27,7 @@ export default function SortFilters(props: SortFiltersProps) {
           key={i}
         />
       ))}
-    </div>
+    </ul>
   );
 }
 
@@ -49,16 +49,16 @@ const SortFilter = (props: SortFilterProps) => {
     }
   };
   return (
-    <div
+    <li
       className={`flex justify-center items-center gap-1 cursor-pointer capitalize`}
       onClick={handelClick}
     >
-      {props.filter.title}{" "}
+      {props.filter.title}
       {order === "asc" ? (
         <CheveronDownIcon className="size-4" />
       ) : (
         <CheveronUpIcon className="size-4" />
       )}
-    </div>
+    </li>
   );
 };

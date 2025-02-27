@@ -61,8 +61,13 @@ export const usersSlice = createSlice({
   },
 });
 
-export const { setUsers, setUsersLoading, setUsersError, setUsersFilters } =
-  usersSlice.actions;
+export const {
+  setUsers,
+  setUsersLoading,
+  setUsersError,
+  setUsersFilters,
+  setUsersSearch,
+} = usersSlice.actions;
 
 export default usersSlice.reducer;
 

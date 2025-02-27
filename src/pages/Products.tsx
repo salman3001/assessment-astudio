@@ -2,6 +2,7 @@ import useFetchProducts from "@src/hooks/products/useFetchProducts";
 import {
   selectProductTableRows,
   setProductsFilters,
+  setProductsSearch,
 } from "@src/store/slices/productsSlice";
 import { RootState } from "@src/store/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -43,15 +44,7 @@ export default function Products() {
   };
 
   const onSearch = (val: string) => {
-    dispatch(
-      setProductsFilters({
-        limit: limit,
-        skip: 0,
-        search: val,
-        sortBy: undefined,
-        order: undefined,
-      }),
-    );
+    dispatch(setProductsSearch(val));
   };
 
   const onSkipChange = (newSkip: number) => {

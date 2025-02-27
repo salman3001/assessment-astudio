@@ -72,14 +72,15 @@ export const {
   setProductsLoading,
   setProductsError,
   setProductsFilters,
+  setProductsSearch,
 } = productsSlice.actions;
 
 export default productsSlice.reducer;
 
 export const selectProductTableRows = createSelector(
   [
-    (state: RootState) => state.products.data,
-    (state: RootState) => state.products.filters,
+    (state: RootState) => state?.products?.data,
+    (state: RootState) => state?.products?.filters,
   ],
   (productData, filters) => {
     const headers = [

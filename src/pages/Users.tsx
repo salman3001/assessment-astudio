@@ -4,6 +4,7 @@ import AdvanceDataTable from "@src/components/AdvanceDataTable";
 import {
   selectUserTableRows,
   setUsersFilters,
+  setUsersSearch,
 } from "@src/store/slices/usersSlice";
 import useFetchUsers from "@src/hooks/users/useFetchUsers";
 import { Filter } from "@src/components/SortFilters";
@@ -43,15 +44,7 @@ export default function Users() {
   };
 
   const onSearch = (val: string) => {
-    dispatch(
-      setUsersFilters({
-        limit: limit,
-        skip: 0,
-        search: val,
-        sortBy: undefined,
-        order: undefined,
-      }),
-    );
+    dispatch(setUsersSearch(val));
   };
 
   const onSkipChange = (newSkip: number) => {
